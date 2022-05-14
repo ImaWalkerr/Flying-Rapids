@@ -8,11 +8,11 @@ class Player {
         this.x = 0;
         this.y = this.game.height - this.height - this.game.groundMargin;
         this.vy = 0;
-        this.weight = 1;
+        this.weight = 1; // for gravity //
         this.image = document.getElementById('player');
         this.frameX = 0;
         this.frameY = 0;
-        this.maxFrame = 5;
+        this.maxFrame; // frame for each animation - set in player states //
         this.fps = 30; // fps for sprite //
         this.frameInterval = 1000/this.fps; // need for fps control update assets //
         this.frameTimer = 0;
@@ -28,9 +28,11 @@ class Player {
 
         // horizontal movement //
         this.x += this.speed;
-        if (input.includes('d')) this.speed = this.maxSpeed;
-        else if (input.includes('a')) this.speed = -this.maxSpeed;
+        if (input.includes('d')) this.speed = this.maxSpeed; // move player right //
+        else if (input.includes('a')) this.speed = -this.maxSpeed; // move player left //
         else this.speed = 0;
+
+        // player cant run outside game window //
         if (this.x < 0) this.x = 0;
         if (this.x > this.game.width - this.width) this.x = this.game.width - this.width;
 
@@ -69,8 +71,9 @@ class Player {
         return this.y >= this.game.height - this.height - this.game.groundMargin;
     }
     // switch player states //
-    setState (state) {
+    setState (state, speed) {
         this.currentState = this.states[state];
+        this.game.speed = this.game.maxSpeed * speed;
         this.currentState.enter();
     }
 }

@@ -27,12 +27,13 @@ class Sitting extends State {
     handleInput(input) {
         if (input.includes('a') ||
             input.includes('d')) {
-            this.player.setState(states.RUNNING);
+            this.player.setState(states.RUNNING, 1);
         }
 
     }
 }
 
+// using js subclassing //
 // Running state settings //
 class Running extends State {
     constructor(player) {
@@ -46,9 +47,9 @@ class Running extends State {
     }
     handleInput(input) {
         if (input.includes('s')) {
-            this.player.setState(states.SITTING);
+            this.player.setState(states.SITTING, 0);
         } else if (input.includes('w')) {
-            this.player.setState(states.JUMPING);
+            this.player.setState(states.JUMPING, 1);
         }
 
     }
@@ -61,14 +62,14 @@ class Jumping extends State {
         this.player = player;
     }
     enter () {
-        if (this.player.onGround()) this.player.vy -= 30; // player jumping height //
+        if (this.player.onGround()) this.player.vy -= 27; // player jumping height //
         this.player.frameX = 0;
         this.player.maxFrame = 6;
         this.player.frameY = 1;
     }
     handleInput(input) {
         if (this.player.vy > this.player.weight) {
-            this.player.setState(states.FALLING);
+            this.player.setState(states.FALLING, 1);
         }
 
     }
@@ -87,7 +88,7 @@ class Falling extends State {
     }
     handleInput(input) {
         if (this.player.onGround()) {
-            this.player.setState(states.RUNNING);
+            this.player.setState(states.RUNNING, 1);
         }
 
     }

@@ -14,14 +14,46 @@ window.addEventListener('load', function () {
             this.width = width;
             this.height = height;
             this.groundMargin = 50; // bottom margin for player //
+            this.speed = 0;
+            this.maxSpeed = 3; // game speed settings //
+            this.background = new Background(this);
             this.player = new Player(this);
             this.input = new InputHandler();
+            this.enemies = []; // enemies array //
+            this.enemyTimer = 0; // enemies spawn timer //
+            this.enemyInterval = 1000; // enemies interval for spawn //
         }
         update(deltaTime) {
+            this.background.update();
             this.player.update(this.input.keys, deltaTime);
+            // handle enemies //
+            if (this.enemyTimer > this.enemyInterval) {
+                this.addEnemy();
+                this.enemyTimer = 0;
+            } else {
+                this.enemyTimer += deltaTime;
+            }
+            this.enemies.forEach(enemy => {
+                enemy.update(deltaTime);
+                // deleting enemies //
+                if (enemy.markedForDeletion) this.enemies.splice(this.enemies.indexOf(enemy), 1);
+            });
         }
         draw(context) {
+            this.background.draw(context);
             this.player.draw(context);
+            this.enemies.forEach(enemy => {
+                enemy.draw(context);
+            });
+        }
+        addEnemy(){
+            // spawn ground enemies when player is moving //
+            if (this.speed > 0 && Math.random() < 0.5) this.enemies.push(new GroundEnemy(this));
+            // spawn climbing enemies when player is moving //
+            else if (this.speed > 0) this.enemies.push(new ClimbingEnemy(this));
+
+            this.enemies.push(new FlyingEnemy(this));
+            console.log(this.enemies);
         }
     }
 
