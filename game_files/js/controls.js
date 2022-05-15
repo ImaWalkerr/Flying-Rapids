@@ -2,7 +2,8 @@
 
 
 class InputHandler {
-    constructor() {
+    constructor(game) {
+        this.game = game;
         // need for checking specific key is pressed //
         this.keys = [];
         window.addEventListener('keydown', event => {
@@ -11,10 +12,9 @@ class InputHandler {
                     event.key === 'a' ||
                     event.key === 'd' ||
                     event.key === 'Enter'
-            ) && this.keys.indexOf(event.key) === -1) {
+                ) && this.keys.indexOf(event.key) === -1) {
                 this.keys.push(event.key);
-            }
-            console.log(event.key, this.keys);
+            } else if (event.key === 'ArrowUp') this.game.debug = !this.game.debug;
         });
 
 
@@ -23,11 +23,9 @@ class InputHandler {
                     event.key === 's' ||
                     event.key === 'a' ||
                     event.key === 'd' ||
-                    event.key === 'Enter'
-            ) {
+                    event.key === 'Enter') {
                 this.keys.splice(this.keys.indexOf(event.key), 1);
             }
-            console.log(event.key, this.keys);
         });
     }
 }

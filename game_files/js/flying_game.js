@@ -18,10 +18,18 @@ window.addEventListener('load', function () {
             this.maxSpeed = 3; // game speed settings //
             this.background = new Background(this);
             this.player = new Player(this);
-            this.input = new InputHandler();
+            this.input = new InputHandler(this);
+            this.UI = new UI(this);
             this.enemies = []; // enemies array //
+            this.particles = []; // particles array //
+            this.maxParticles = 50;
             this.enemyTimer = 0; // enemies spawn timer //
             this.enemyInterval = 1000; // enemies interval for spawn //
+            this.score = 0; // player score //
+            this.fontColor = 'black'; // fontColor for score //
+            this.debug = true; // turn on/off debug mode //
+            this.player.currentState = this.player.states[0];
+            this.player.currentState.enter();
         }
         update(deltaTime) {
             this.background.update();
@@ -38,6 +46,14 @@ window.addEventListener('load', function () {
                 // deleting enemies //
                 if (enemy.markedForDeletion) this.enemies.splice(this.enemies.indexOf(enemy), 1);
             });
+            // handle particles //
+            this.particles.forEach((particle, index) => {
+                particle.update();
+                if (particle .markedForDeletion) this.particles.splice(index, 1);
+            });
+            if (this.particles.length > this.maxParticles) {
+                this.particles = this.particles.splice(0, 50);
+            }
         }
         draw(context) {
             this.background.draw(context);
@@ -45,21 +61,22 @@ window.addEventListener('load', function () {
             this.enemies.forEach(enemy => {
                 enemy.draw(context);
             });
+            this.particles.forEach(particle => {
+                particle.draw(context);
+            });
+            this.UI.draw(context);
         }
         addEnemy(){
             // spawn ground enemies when player is moving //
             if (this.speed > 0 && Math.random() < 0.5) this.enemies.push(new GroundEnemy(this));
             // spawn climbing enemies when player is moving //
             else if (this.speed > 0) this.enemies.push(new ClimbingEnemy(this));
-
             this.enemies.push(new FlyingEnemy(this));
-            console.log(this.enemies);
         }
     }
 
     // game functions //
     const game = new Game(canvas.width, canvas.height);
-    console.log(game);
     let lastTime = 0;
 
     function animate(timeStamp) {

@@ -9,7 +9,7 @@ class Enemy {
         this.frameTimer = 0;
         this.markedForDeletion = false;
     }
-    update (deltaTime) {
+    update(deltaTime) {
         // movement //
         this.x -= this.speedX; // this.x -= this.speedX + this.game.speed; //
         this.y += this.speedY;
@@ -23,7 +23,9 @@ class Enemy {
         // check if off screen //
         if (this.x + this.width < 0) this.markedForDeletion = true;
     }
-    draw (context) {
+    draw(context) {
+        // for debug mode //
+        if (this.game.debug) context.strokeRect(this.x, this.y, this.width, this.height);
         context.drawImage(
             this.image,
             this.frameX * this.width,
@@ -100,6 +102,7 @@ class ClimbingEnemy extends Enemy {
     }
     draw(context) {
         super.draw(context);
+        // web drawing for enemies climbing (if using spiders asset) //
         context.beginPath();
         context.moveTo(this.x + this.width/2, 0);
         context.lineTo(this.x + this.width/2, this.y + 50);

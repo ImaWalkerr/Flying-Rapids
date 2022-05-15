@@ -3,12 +3,12 @@
 class Player {
     constructor(game) {
         this.game = game;
-        this.width = 100;
-        this.height = 91.3;
+        this.width = 100; // player 1 frame width //
+        this.height = 91.3; // player 1 frame height //
         this.x = 0;
         this.y = this.game.height - this.height - this.game.groundMargin;
         this.vy = 0;
-        this.weight = 1; // for gravity //
+        this.weight = 0.3; // for gravity //
         this.image = document.getElementById('player');
         this.frameX = 0;
         this.frameY = 0;
@@ -18,11 +18,19 @@ class Player {
         this.frameTimer = 0;
         this.speed = 0;
         this.maxSpeed = 3; // player speed //
-        this.states = [new Sitting(this), new Running(this), new Jumping(this), new Falling(this)]; // index import must be same as index in the array //
-        this.currentState = this.states[0];
-        this.currentState.enter();
+        this.states = [ // index import must be same as index in the array //
+            new Sitting(this.game),
+            new Running(this.game),
+            new Jumping(this.game),
+            new Falling(this.game),
+            new Rolling(this.game),
+            new Diving(this.game),
+            new Hit(this.game)
+        ];
     }
     update(input, deltaTime) {
+        // collision //
+        this.checkCollision();
         // for handle method //
         this.currentState.handleInput(input);
 
@@ -32,6 +40,10 @@ class Player {
         else if (input.includes('a')) this.speed = -this.maxSpeed; // move player left //
         else this.speed = 0;
 
+        // horizontal boundaries //
+        if (this.x < 0) this.x = 0;
+        if (this.x > this.game.width - this.width) this.x = this.game.width - this.width;
+
         // player cant run outside game window //
         if (this.x < 0) this.x = 0;
         if (this.x > this.game.width - this.width) this.x = this.game.width - this.width;
@@ -40,6 +52,10 @@ class Player {
         this.y += this.vy;
         if (!this.onGround()) this.vy += this.weight;
         else this.vy = 0;
+
+        // vertical boundaries //
+        if (this.y > this.game.height - this.height - this.game.groundMargin)
+            this.y = this.game.height - this.height - this.game.groundMargin;
 
         // sprite animation //
         if (this.frameTimer > this.frameInterval) {
@@ -54,6 +70,8 @@ class Player {
     // draw player from assets //
     draw(context) {
         // draw 1 player frame //
+        // for debug mode //
+        if (this.game.debug) context.strokeRect(this.x, this.y, this.width, this.height);
         context.drawImage(
             this.image,
             this.frameX * this.width,
@@ -76,4 +94,25 @@ class Player {
         this.game.speed = this.game.maxSpeed * speed;
         this.currentState.enter();
     }
+    // collision detection between rectangles //
+    checkCollision() {
+        this.game.enemies.forEach(enemy => {
+           if (
+               enemy.x < this.x + this.width &&
+               enemy.x + enemy.width > this.x &&
+               enemy.y < this.y + this.height &&
+               enemy.y + enemy.height > this.y
+           ){
+               // collision detected //
+               enemy.markedForDeletion = true;
+               // if player in rolling or diving states - destroy enemy + 1 score //
+               if (this.currentState === [4] || this.currentState === [5]) {
+                   this.game.score++;
+               } else {
+                    this.setState(6, 0);
+               }
+           }
+        });
+    }
+
 }
