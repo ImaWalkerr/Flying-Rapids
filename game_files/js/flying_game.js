@@ -22,6 +22,7 @@ window.addEventListener('load', function () {
             this.UI = new UI(this);
             this.enemies = []; // enemies array //
             this.particles = []; // particles array //
+            this.collisions = []; // collisions array //
             this.maxParticles = 50;
             this.enemyTimer = 0; // enemies spawn timer //
             this.enemyInterval = 1000; // enemies interval for spawn //
@@ -49,11 +50,16 @@ window.addEventListener('load', function () {
             // handle particles //
             this.particles.forEach((particle, index) => {
                 particle.update();
-                if (particle .markedForDeletion) this.particles.splice(index, 1);
+                if (particle.markedForDeletion) this.particles.splice(index, 1);
             });
             if (this.particles.length > this.maxParticles) {
                 this.particles = this.particles.splice(0, 50);
             }
+            // handle collisions sprites //
+            this.collisions.forEach((collision, index) => {
+                collision.update(deltaTime);
+                if (collision.markedForDeletion) this.collisions.splice(index, 1);
+            });
         }
         draw(context) {
             this.background.draw(context);
@@ -63,6 +69,9 @@ window.addEventListener('load', function () {
             });
             this.particles.forEach(particle => {
                 particle.draw(context);
+            });
+            this.collisions.forEach(collision => {
+                collision.draw(context);
             });
             this.UI.draw(context);
         }

@@ -105,6 +105,11 @@ class Player {
            ){
                // collision detected //
                enemy.markedForDeletion = true;
+               this.game.collisions.push(new CollisionAnimation(
+                   this.game,
+                   enemy.x * enemy.width * 0.5,
+                   enemy.y * enemy.height * 0.5
+               ));
                // if player in rolling or diving states - destroy enemy + 1 score //
                if (this.currentState === [4] || this.currentState === [5]) {
                    this.game.score++;
@@ -114,5 +119,4 @@ class Player {
            }
         });
     }
-
 }
